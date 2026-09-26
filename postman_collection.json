@@ -1,0 +1,376 @@
+{
+  "info": {
+    "name": "Saro Agency CMS & Admin API",
+    "description": "Comprehensive API collection for Saro Agency Backend CMS (Supabase + Cloudinary Edition)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "YOUR_SUPABASE_JWT_TOKEN",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Public Endpoints",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        },
+        {
+          "name": "Get Published Testimonials",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/testimonials", "host": ["{{baseUrl}}"], "path": ["testimonials"] }
+          }
+        },
+        {
+          "name": "Get Portfolio Items",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/portfolio?category=branding&featured=true&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio"],
+              "query": [
+                { "key": "category", "value": "branding" },
+                { "key": "featured", "value": "true" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Portfolio Item By Slug",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/portfolio/slug/ethereal-autumn-lookbook", "host": ["{{baseUrl}}"], "path": ["portfolio", "slug", "ethereal-autumn-lookbook"] }
+          }
+        },
+        {
+          "name": "Get Open Career Listings",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/careers", "host": ["{{baseUrl}}"], "path": ["careers"] }
+          }
+        },
+        {
+          "name": "Get Career Details",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/careers/:id", "host": ["{{baseUrl}}"], "path": ["careers", ":id"] }
+          }
+        },
+        {
+          "name": "Submit Contact Form",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sarah Jenkins\",\n  \"email\": \"s.jenkins@zenithcapital.com\",\n  \"phone\": \"+1 (555) 443-2211\",\n  \"subject\": \"Rebranding & Digital Strategy\",\n  \"message\": \"We are interested in a full rebrand and new website for our Series B launch.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/contact", "host": ["{{baseUrl}}"], "path": ["contact"] }
+          }
+        },
+        {
+          "name": "Apply for Job (Multipart with Resume File)",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Alex Rivera", "type": "text" },
+                { "key": "email", "value": "alex.rivera@example.com", "type": "text" },
+                { "key": "phone", "value": "+1 (555) 912-3456", "type": "text" },
+                { "key": "cover_letter", "value": "Excited to bring my agency background to Saro.", "type": "text" },
+                { "key": "resume", "type": "file", "src": "" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/careers/:id/apply", "host": ["{{baseUrl}}"], "path": ["careers", ":id", "apply"] }
+          }
+        },
+        {
+          "name": "Get Active Client Logos",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/client-logos", "host": ["{{baseUrl}}"], "path": ["client-logos"] }
+          }
+        },
+        {
+          "name": "Get Site Settings",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/site-settings", "host": ["{{baseUrl}}"], "path": ["site-settings"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Dashboard & Analytics",
+      "item": [
+        {
+          "name": "Get Analytics Summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/analytics/summary", "host": ["{{baseUrl}}"], "path": ["analytics", "summary"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Cloudinary Uploads",
+      "item": [
+        {
+          "name": "Upload Single Media (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "folder", "value": "agency/portfolio/covers", "type": "text" },
+                { "key": "file", "type": "file", "src": "" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/upload", "host": ["{{baseUrl}}"], "path": ["upload"] }
+          }
+        },
+        {
+          "name": "Upload Multiple Media (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "folder", "value": "agency/portfolio/gallery", "type": "text" },
+                { "key": "files", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/upload/multiple", "host": ["{{baseUrl}}"], "path": ["upload", "multiple"] }
+          }
+        },
+        {
+          "name": "Delete Cloudinary Asset Directly",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"public_id\": \"agency/portfolio/covers/sample-id\",\n  \"resource_type\": \"image\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/upload", "host": ["{{baseUrl}}"], "path": ["upload"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Portfolio Management",
+      "item": [
+        {
+          "name": "Create Portfolio Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Quantum AI Brand System\",\n  \"slug\": \"quantum-ai-brand-system\",\n  \"client\": \"Quantum Dynamics\",\n  \"category\": \"branding\",\n  \"description\": \"Comprehensive identity and visual design system.\",\n  \"date\": \"March 2026\",\n  \"cover_image_url\": \"https://res.cloudinary.com/demo/image/upload/v1612345678/agency/portfolio/covers/quantum.jpg\",\n  \"cover_image_public_id\": \"agency/portfolio/covers/quantum\",\n  \"media_type\": \"image\",\n  \"tags\": [\"AI\", \"Branding\", \"3D\"],\n  \"status\": \"published\",\n  \"display_order\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/portfolio", "host": ["{{baseUrl}}"], "path": ["portfolio"] }
+          }
+        },
+        {
+          "name": "Update Portfolio Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"featured\",\n  \"display_order\": 2\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/portfolio/:id", "host": ["{{baseUrl}}"], "path": ["portfolio", ":id"] }
+          }
+        },
+        {
+          "name": "Attach Media to Portfolio Gallery",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"media\": [\n    {\n      \"public_id\": \"agency/portfolio/gallery/quantum-slide1\",\n      \"url\": \"https://res.cloudinary.com/demo/image/upload/v1612345678/agency/portfolio/gallery/quantum-slide1.jpg\",\n      \"resource_type\": \"image\",\n      \"caption\": \"Brand guide typography\",\n      \"display_order\": 1\n    }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/portfolio/:id/media", "host": ["{{baseUrl}}"], "path": ["portfolio", ":id", "media"] }
+          }
+        },
+        {
+          "name": "Delete Portfolio Item",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/portfolio/:id", "host": ["{{baseUrl}}"], "path": ["portfolio", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Testimonials Management",
+      "item": [
+        {
+          "name": "Create Testimonial",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"client_name\": \"Chloe Bennett\",\n  \"company\": \"Veloce Footwear\",\n  \"photo_url\": \"https://res.cloudinary.com/demo/image/upload/v1612345678/agency/testimonials/chloe.jpg\",\n  \"cloudinary_public_id\": \"agency/testimonials/chloe\",\n  \"testimonial_text\": \"The visual campaign transformed our direct-to-consumer sales.\",\n  \"rating\": 5,\n  \"published\": true,\n  \"display_order\": 4\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/testimonials", "host": ["{{baseUrl}}"], "path": ["testimonials"] }
+          }
+        },
+        {
+          "name": "Reorder Testimonials",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"id\": \"<UUID_1>\", \"display_order\": 1 },\n    { \"id\": \"<UUID_2>\", \"display_order\": 2 }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/testimonials/reorder", "host": ["{{baseUrl}}"], "path": ["testimonials", "reorder"] }
+          }
+        },
+        {
+          "name": "Delete Testimonial",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/testimonials/:id", "host": ["{{baseUrl}}"], "path": ["testimonials", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Careers & Job Applications",
+      "item": [
+        {
+          "name": "Create Career Listing",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Motion Graphics Designer\",\n  \"department\": \"Creative\",\n  \"location\": \"Remote / Hybrid\",\n  \"type\": \"full-time\",\n  \"description\": \"Craft high-end 2D/3D motion graphics for global brands.\",\n  \"requirements\": [\"3+ years After Effects and Cinema 4D\", \"Strong typography sense\"],\n  \"status\": \"open\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/careers", "host": ["{{baseUrl}}"], "path": ["careers"] }
+          }
+        },
+        {
+          "name": "Get Applications (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/applications?status=new&page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["applications"], "query": [{ "key": "status", "value": "new" }] }
+          }
+        },
+        {
+          "name": "Update Application Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"shortlisted\",\n  \"notes\": \"Passed initial screening. Moving to portfolio review stage.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/applications/:id", "host": ["{{baseUrl}}"], "path": ["applications", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Contact Form Leads",
+      "item": [
+        {
+          "name": "Get Contact Leads (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/contacts?status=new", "host": ["{{baseUrl}}"], "path": ["contacts"], "query": [{ "key": "status", "value": "new" }] }
+          }
+        },
+        {
+          "name": "Update Contact Lead Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"replied\",\n  \"notes\": \"Introductory discovery call scheduled for Tuesday.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/contacts/:id", "host": ["{{baseUrl}}"], "path": ["contacts", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Site Settings",
+      "item": [
+        {
+          "name": "Update Site Settings (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hero_headline\": \"Transforming Brands Into Digital Legacies\",\n  \"hero_subheadline\": \"We craft compelling digital experiences, high-converting campaigns, and visual stories that elevate your brand.\",\n  \"hero_cta_text\": \"Explore Our Work\",\n  \"hero_cta_link\": \"/portfolio\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/site-settings", "host": ["{{baseUrl}}"], "path": ["site-settings"] }
+          }
+        }
+      ]
+    }
+  ]
+}

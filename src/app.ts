@@ -1,0 +1,105 @@
+import express, { Application, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import { env } from './config/env.js';
+import apiV1Router from './routes/index.js';
+import { errorHandler } from './middleware/error.middleware.js';
+import { ApiError } from './utils/apiError.js';
+
+const app: Application = express();
+
+// 1. Security Headers
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
+
+// 2. CORS Setup
+const allowedOrigins = [
+  env.FRONTEND_URL,
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:5173',
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+
+      if (
+        allowedOrigins.includes(origin) ||
+        process.env.NODE_ENV !== 'production' ||
+        origin.endsWith('.vercel.app')
+      ) {
+        return callback(null, true);
+      }
+
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  })
+);
+
+// 3. Request Logging
+if (!env.isProduction) {
+  app.use(morgan('dev'));
+} else {
+  app.use(morgan('combined'));
+}
+
+// 4. Body Parsers
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// 5. Welcome & Health Route
+app.get('/', (req: Request, res: Response) => {
+  res.json({
+    name: 'Saro Agency Backend CMS & Admin API',
+    status: 'online',
+    version: '1.0.0',
+    documentation: '/api/v1/health',
+    endpoints: {
+      public: [
+        'GET  /api/v1/testimonials',
+        'GET  /api/v1/portfolio',
+        'GET  /api/v1/portfolio/slug/:slug',
+        'GET  /api/v1/careers',
+        'GET  /api/v1/careers/:id',
+        'POST /api/v1/contact',
+        'POST /api/v1/careers/:id/apply',
+        'GET  /api/v1/client-logos',
+        'GET  /api/v1/site-settings',
+      ],
+      admin: [
+        'GET  /api/v1/analytics/summary',
+        'POST /api/v1/upload',
+        'GET  /api/v1/applications',
+        'PATCH/DELETE /api/v1/applications/:id',
+        'GET  /api/v1/contacts',
+        'PATCH/DELETE /api/v1/contacts/:id',
+        'POST/PUT/DELETE /api/v1/portfolio',
+        'POST/PUT/DELETE /api/v1/testimonials',
+        'POST/PUT/DELETE /api/v1/careers',
+        'POST/PUT/DELETE /api/v1/client-logos',
+        'PUT  /api/v1/site-settings',
+      ],
+    },
+  });
+});
+
+// 6. Mount API v1 Routes
+app.use('/api/v1', apiV1Router);
+
+// 7. Handle Unmatched 404 Routes
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(ApiError.notFound(`Cannot ${req.method} ${req.originalUrl}`));
+});
+
+// 8. Global Error Handler
+app.use(errorHandler);
+
+export default app;

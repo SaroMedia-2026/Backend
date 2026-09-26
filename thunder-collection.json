@@ -1,0 +1,133 @@
+{
+  "clientName": "Thunder Client",
+  "collectionName": "Saro Agency CMS API",
+  "collectionId": "saro-agency-backend-cms",
+  "dateExported": "2026-09-26",
+  "version": "1.1",
+  "folders": [
+    {
+      "_id": "folder_public",
+      "name": "1. Public Endpoints",
+      "containerId": ""
+    },
+    {
+      "_id": "folder_dashboard",
+      "name": "2. Dashboard & Analytics",
+      "containerId": ""
+    },
+    {
+      "_id": "folder_upload",
+      "name": "3. Cloudinary Uploads",
+      "containerId": ""
+    },
+    {
+      "_id": "folder_portfolio",
+      "name": "4. Portfolio Management",
+      "containerId": ""
+    },
+    {
+      "_id": "folder_testimonials",
+      "name": "5. Testimonials Management",
+      "containerId": ""
+    },
+    {
+      "_id": "folder_careers",
+      "name": "6. Careers & Applications",
+      "containerId": ""
+    },
+    {
+      "_id": "folder_contacts",
+      "name": "7. Contact Submissions",
+      "containerId": ""
+    }
+  ],
+  "requests": [
+    {
+      "_id": "req_health",
+      "colId": "saro-agency-backend-cms",
+      "containerId": "folder_public",
+      "name": "Health Check",
+      "url": "http://localhost:5000/api/v1/health",
+      "method": "GET"
+    },
+    {
+      "_id": "req_testimonials_pub",
+      "colId": "saro-agency-backend-cms",
+      "containerId": "folder_public",
+      "name": "Get Testimonials (Public)",
+      "url": "http://localhost:5000/api/v1/testimonials",
+      "method": "GET"
+    },
+    {
+      "_id": "req_portfolio_pub",
+      "colId": "saro-agency-backend-cms",
+      "containerId": "folder_public",
+      "name": "Get Portfolio Items (Public)",
+      "url": "http://localhost:5000/api/v1/portfolio?page=1&limit=10",
+      "method": "GET"
+    },
+    {
+      "_id": "req_careers_pub",
+      "colId": "saro-agency-backend-cms",
+      "containerId": "folder_public",
+      "name": "Get Careers (Public)",
+      "url": "http://localhost:5000/api/v1/careers",
+      "method": "GET"
+    },
+    {
+      "_id": "req_contact_submit",
+      "colId": "saro-agency-backend-cms",
+      "containerId": "folder_public",
+      "name": "Submit Contact Form",
+      "url": "http://localhost:5000/api/v1/contact",
+      "method": "POST",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Sarah Jenkins\",\n  \"email\": \"s.jenkins@zenithcapital.com\",\n  \"phone\": \"+1 (555) 443-2211\",\n  \"subject\": \"Rebranding & Digital Strategy\",\n  \"message\": \"We would love to discuss a timeline and budget estimate.\"\n}"
+      }
+    },
+    {
+      "_id": "req_analytics_summary",
+      "colId": "saro-agency-backend-cms",
+      "containerId": "folder_dashboard",
+      "name": "Get Analytics Summary",
+      "url": "http://localhost:5000/api/v1/analytics/summary",
+      "method": "GET",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{adminToken}}" }]
+    },
+    {
+      "_id": "req_upload_single",
+      "colId": "saro-agency-backend-cms",
+      "containerId": "folder_upload",
+      "name": "Upload Media to Cloudinary",
+      "url": "http://localhost:5000/api/v1/upload",
+      "method": "POST",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{adminToken}}" }],
+      "body": {
+        "type": "formdata",
+        "formdata": [
+          { "name": "folder", "value": "agency/portfolio/covers" }
+        ]
+      }
+    },
+    {
+      "_id": "req_contacts_admin",
+      "colId": "saro-agency-backend-cms",
+      "containerId": "folder_contacts",
+      "name": "Get All Contact Leads",
+      "url": "http://localhost:5000/api/v1/contacts?status=new",
+      "method": "GET",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{adminToken}}" }]
+    },
+    {
+      "_id": "req_applications_admin",
+      "colId": "saro-agency-backend-cms",
+      "containerId": "folder_careers",
+      "name": "Get Job Applications",
+      "url": "http://localhost:5000/api/v1/applications?status=new",
+      "method": "GET",
+      "headers": [{ "name": "Authorization", "value": "Bearer {{adminToken}}" }]
+    }
+  ]
+}
