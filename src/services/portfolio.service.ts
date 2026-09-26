@@ -173,6 +173,29 @@ export class PortfolioService {
       .single();
 
     if (error) throw ApiError.internal(`Failed to update portfolio item: ${error.message}`);
+
+    if (media !== undefined && Array.isArray(media)) {
+      // Sync media gallery
+      await supabaseAdmin.from('portfolio_media').delete().eq('portfolio_item_id', id);
+      if (media.length > 0) {
+        const formattedMedia = media.map((m: any, idx: number) => ({
+          portfolio_item_id: id,
+          public_id: m.public_id || `media_${Date.now()}_${idx}`,
+          url: m.url,
+          resource_type: m.resource_type || 'image',
+          caption: m.caption || null,
+          display_order: m.display_order ?? idx + 1,
+        }));
+        const { data: updatedMedia } = await supabaseAdmin
+          .from('portfolio_media')
+          .insert(formattedMedia)
+          .select();
+        data.media = updatedMedia || [];
+      } else {
+        data.media = [];
+      }
+    }
+
     return data;
   }
 

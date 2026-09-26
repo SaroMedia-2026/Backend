@@ -36,7 +36,15 @@ export class PortfolioController {
   });
 
   static getById = asyncHandler(async (req: Request, res: Response) => {
-    const item = await PortfolioService.getById(req.params.id);
+    const isPublic = !req.user;
+    const { id } = req.params;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    let item;
+    if (isUuid) {
+      item = await PortfolioService.getById(id);
+    } else {
+      item = await PortfolioService.getBySlug(id, isPublic);
+    }
     res.json(ApiResponse.success('Portfolio item retrieved successfully', item));
   });
 

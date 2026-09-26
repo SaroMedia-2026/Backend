@@ -90,6 +90,7 @@ export class CareersService {
       resume_url: string;
       resume_public_id: string;
       cover_letter?: string | null;
+      answers?: Record<string, string> | null;
     }
   ): Promise<JobApplication> {
     // Validate career exists and is open
@@ -109,10 +110,11 @@ export class CareersService {
           resume_url: payload.resume_url,
           resume_public_id: payload.resume_public_id,
           cover_letter: payload.cover_letter || null,
+          answers: payload.answers || null,
           status: 'new',
         },
       ])
-      .select('*, career:careers(title, department, location)')
+      .select('*, career:careers(title, department, location, custom_questions)')
       .single();
 
     if (error) throw ApiError.internal(`Failed to submit job application: ${error.message}`);
@@ -124,14 +126,15 @@ export class CareersService {
 
     let query = supabaseAdmin
       .from('job_applications')
-      .select('*, career:careers(title, department, location, type)', { count: 'exact' })
+      .select('*, career:careers(title, department, location, type, custom_questions)', { count: 'exact' })
       .order('applied_at', { ascending: false });
 
-    if (careerId) {
+    if (careerId && careerId !== 'undefined' && careerId !== 'null') {
       query = query.eq('career_id', careerId);
     }
 
-    if (status) {
+    const validStatuses: ApplicationStatus[] = ['new', 'reviewed', 'shortlisted', 'rejected', 'hired'];
+    if (status && validStatuses.includes(status)) {
       query = query.eq('status', status);
     }
 

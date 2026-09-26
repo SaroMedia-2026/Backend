@@ -79,6 +79,9 @@ export interface PortfolioItem {
   tags: string[];
   status: PortfolioStatus;
   display_order: number;
+  instagram_url?: string | null;
+  facebook_url?: string | null;
+  tiktok_url?: string | null;
   created_at: string;
   updated_at: string;
   media?: PortfolioMedia[];
@@ -97,6 +100,7 @@ export interface Career {
   requirements: string[];
   deadline: string | null;
   status: CareerStatus;
+  custom_questions?: Array<{ id: string; question: string; required?: boolean; type?: 'text' | 'textarea' }> | null;
   created_at: string;
   updated_at: string;
 }
@@ -112,6 +116,7 @@ export interface JobApplication {
   resume_url: string;
   resume_public_id: string;
   cover_letter: string | null;
+  answers?: Record<string, string> | null;
   status: ApplicationStatus;
   notes: string | null;
   applied_at: string;

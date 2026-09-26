@@ -31,12 +31,12 @@ export class AnalyticsService {
       const [recentContacts, recentApplications, recentTestimonials] = await Promise.all([
         supabaseAdmin
           .from('contact_submissions')
-          .select('id, name, email, subject, status, submitted_at')
+          .select('id, name, email, phone, subject, message, status, submitted_at')
           .order('submitted_at', { ascending: false })
           .limit(5),
         supabaseAdmin
           .from('job_applications')
-          .select('id, name, email, career_id, status, applied_at, career:careers(title)')
+          .select('id, name, email, phone, career_id, resume_url, cover_letter, status, applied_at, career:careers(title)')
           .order('applied_at', { ascending: false })
           .limit(5),
         supabaseAdmin

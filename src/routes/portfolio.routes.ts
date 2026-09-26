@@ -16,8 +16,8 @@ router.get('/', optionalAuth, PortfolioController.getItems);
 // Public: GET /api/v1/portfolio/slug/:slug
 router.get('/slug/:slug', optionalAuth, PortfolioController.getBySlug);
 
-// Protected: Admin get by UUID
-router.get('/:id', authenticate, PortfolioController.getById);
+// Public or Admin get by UUID or slug
+router.get('/:id', optionalAuth, PortfolioController.getById);
 
 // Protected: Admin create portfolio item
 router.post(

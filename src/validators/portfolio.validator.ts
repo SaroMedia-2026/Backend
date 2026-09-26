@@ -21,6 +21,9 @@ export const createPortfolioItemSchema = z.object({
   tags: z.array(z.string()).default([]),
   status: z.enum(['published', 'draft', 'featured']).default('published'),
   display_order: z.number().int().default(0),
+  instagram_url: z.string().nullable().optional(),
+  facebook_url: z.string().nullable().optional(),
+  tiktok_url: z.string().nullable().optional(),
   media: z.array(portfolioMediaItemSchema).optional(),
 });
 

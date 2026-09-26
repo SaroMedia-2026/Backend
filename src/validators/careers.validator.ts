@@ -9,6 +9,7 @@ export const createCareerSchema = z.object({
   requirements: z.array(z.string()).default([]),
   deadline: z.string().datetime().nullable().optional(),
   status: z.enum(['open', 'closed', 'draft']).default('open'),
+  custom_questions: z.array(z.any()).optional().nullable(),
 });
 
 export const updateCareerSchema = createCareerSchema.partial();
@@ -18,6 +19,7 @@ export const applyJobSchema = z.object({
   email: z.string().email('A valid email address is required'),
   phone: z.string().max(50).nullable().optional(),
   cover_letter: z.string().max(5000).nullable().optional(),
+  answers: z.any().optional().nullable(),
   // resume_url and resume_public_id can be provided directly or populated via multer file upload
   resume_url: z.string().url().optional(),
   resume_public_id: z.string().optional(),

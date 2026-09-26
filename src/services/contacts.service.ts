@@ -43,7 +43,8 @@ export class ContactsService {
       .select('*', { count: 'exact' })
       .order('submitted_at', { ascending: false });
 
-    if (status) {
+    const validStatuses: ContactStatus[] = ['new', 'read', 'replied', 'archived'];
+    if (status && validStatuses.includes(status)) {
       query = query.eq('status', status);
     }
 

@@ -57,11 +57,21 @@ export class CareersController {
       throw ApiError.badRequest('Resume file is required (upload as multipart "resume" or provide resume_url and resume_public_id).');
     }
 
+    let answers = req.body.answers;
+    if (typeof answers === 'string') {
+      try {
+        answers = JSON.parse(answers);
+      } catch (e) {
+        // ignore parse error
+      }
+    }
+
     const application = await CareersService.submitApplication(careerId, {
       name: req.body.name,
       email: req.body.email,
       phone: req.body.phone,
       cover_letter: req.body.cover_letter,
+      answers: answers || null,
       resume_url: resumeUrl,
       resume_public_id: resumePublicId,
     });
