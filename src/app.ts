@@ -73,7 +73,16 @@ if (!env.isProduction) {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// 5. Welcome & Health Route
+// 5. Welcome & Health Routes (UptimeRobot / Health Check)
+app.get('/health', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'healthy',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+    service: 'saro-backend',
+  });
+});
+
 app.get('/', (req: Request, res: Response) => {
   res.json({
     name: 'Saro Agency Backend CMS & Admin API',
