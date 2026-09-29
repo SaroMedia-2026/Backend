@@ -25,6 +25,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:5173',
+  'https://saromedia.com.np',
+  'https://www.saromedia.com.np',
 ];
 
 app.use(
@@ -36,7 +38,10 @@ app.use(
       if (
         allowedOrigins.includes(origin) ||
         process.env.NODE_ENV !== 'production' ||
-        origin.endsWith('.vercel.app')
+        origin.endsWith('.vercel.app') ||
+        origin === 'https://saromedia.com.np' ||
+        origin === 'http://saromedia.com.np' ||
+        origin.endsWith('.saromedia.com.np')
       ) {
         return callback(null, true);
       }
