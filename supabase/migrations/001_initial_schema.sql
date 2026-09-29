@@ -260,27 +260,34 @@ INSERT INTO public.site_settings (
 -- ==============================================================================
 CREATE INDEX IF NOT EXISTS idx_client_logos_order ON public.client_logos (display_order ASC);
 CREATE INDEX IF NOT EXISTS idx_client_logos_active ON public.client_logos (is_active);
+CREATE INDEX IF NOT EXISTS idx_client_logos_active_order ON public.client_logos (is_active, display_order ASC);
 
 CREATE INDEX IF NOT EXISTS idx_testimonials_order ON public.testimonials (display_order ASC);
 CREATE INDEX IF NOT EXISTS idx_testimonials_published ON public.testimonials (published);
+CREATE INDEX IF NOT EXISTS idx_testimonials_published_order ON public.testimonials (published, display_order ASC);
 
 CREATE INDEX IF NOT EXISTS idx_portfolio_items_status ON public.portfolio_items (status);
 CREATE INDEX IF NOT EXISTS idx_portfolio_items_category ON public.portfolio_items (category);
 CREATE INDEX IF NOT EXISTS idx_portfolio_items_slug ON public.portfolio_items (slug);
 CREATE INDEX IF NOT EXISTS idx_portfolio_items_order ON public.portfolio_items (display_order ASC);
+CREATE INDEX IF NOT EXISTS idx_portfolio_items_status_order ON public.portfolio_items (status, display_order ASC);
+CREATE INDEX IF NOT EXISTS idx_portfolio_items_cat_status ON public.portfolio_items (category, status);
 
 CREATE INDEX IF NOT EXISTS idx_portfolio_media_item ON public.portfolio_media (portfolio_item_id);
 CREATE INDEX IF NOT EXISTS idx_portfolio_media_order ON public.portfolio_media (display_order ASC);
 
 CREATE INDEX IF NOT EXISTS idx_careers_status ON public.careers (status);
 CREATE INDEX IF NOT EXISTS idx_careers_department ON public.careers (department);
+CREATE INDEX IF NOT EXISTS idx_careers_status_created ON public.careers (status, created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_job_applications_career ON public.job_applications (career_id);
 CREATE INDEX IF NOT EXISTS idx_job_applications_status ON public.job_applications (status);
 CREATE INDEX IF NOT EXISTS idx_job_applications_date ON public.job_applications (applied_at DESC);
+CREATE INDEX IF NOT EXISTS idx_job_applications_career_date ON public.job_applications (career_id, applied_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_contact_submissions_status ON public.contact_submissions (status);
 CREATE INDEX IF NOT EXISTS idx_contact_submissions_date ON public.contact_submissions (submitted_at DESC);
+CREATE INDEX IF NOT EXISTS idx_contact_submissions_status_date ON public.contact_submissions (status, submitted_at DESC);
 
 -- ==============================================================================
 -- 13. Enable Row Level Security (RLS) on All Tables

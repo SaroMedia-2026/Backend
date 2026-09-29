@@ -11,11 +11,16 @@ const { Client } = pg;
 async function runMigration() {
   console.log('🚀 Running database migration on Supabase PostgreSQL...');
 
-  const host = process.env.DB_HOST || 'db.cexwuqkrstuqfmbqkwss.supabase.co';
+  const host = process.env.DB_HOST || '';
   const port = parseInt(process.env.DB_PORT || '5432', 10);
   const user = process.env.DB_USER || 'postgres';
-  const password = process.env.DB_PASSWORD || 'Saro@official@2026';
+  const password = process.env.DB_PASSWORD || '';
   const database = process.env.DB_NAME || 'postgres';
+
+  if (!host || !password) {
+    console.error('❌ DB_HOST and DB_PASSWORD environment variables are required for migration.');
+    process.exit(1);
+  }
 
   const client = new Client({
     host,

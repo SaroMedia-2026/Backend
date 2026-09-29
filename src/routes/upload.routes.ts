@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { UploadController } from '../controllers/upload.controller.js';
 import { authenticate, requireStaff, requireAdmin } from '../middleware/auth.middleware.js';
 import { uploadSingle, uploadMultiple } from '../middleware/upload.middleware.js';
+import { uploadLimiter } from '../middleware/rateLimiter.middleware.js';
 
 const router = Router();
 
@@ -11,6 +12,7 @@ router.post(
   '/',
   authenticate,
   requireStaff,
+  uploadLimiter,
   uploadSingle('file'),
   UploadController.uploadSingle
 );
@@ -21,6 +23,7 @@ router.post(
   '/multiple',
   authenticate,
   requireStaff,
+  uploadLimiter,
   uploadMultiple('files', 10),
   UploadController.uploadMultiple
 );

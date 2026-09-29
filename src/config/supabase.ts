@@ -49,3 +49,39 @@ export function createUserClient(jwtToken: string): SupabaseClient {
     },
   });
 }
+
+/**
+ * Automatically retries Supabase database operations if transient clock skew causes "JWT issued at future".
+ */
+export async function withClockSkewRetry<T>(operation: () => Promise<T>, maxRetries = 2, delayMs = 600): Promise<T> {
+  let attempt = 0;
+  while (true) {
+    try {
+      const result: any = await operation();
+      if (
+        result &&
+        result.error &&
+        typeof result.error.message === 'string' &&
+        result.error.message.toLowerCase().includes('jwt issued at future')
+      ) {
+        if (attempt < maxRetries) {
+          attempt++;
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+          continue;
+        }
+      }
+      return result;
+    } catch (err: any) {
+      if (
+        attempt < maxRetries &&
+        typeof err?.message === 'string' &&
+        err.message.toLowerCase().includes('jwt issued at future')
+      ) {
+        attempt++;
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        continue;
+      }
+      throw err;
+    }
+  }
+}

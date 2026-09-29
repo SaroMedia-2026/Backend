@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller.js';
 import { authenticate } from '../middleware/auth.middleware.js';
+import { authLimiter } from '../middleware/rateLimiter.middleware.js';
 
 const router = Router();
 
-// Public: Login endpoint
-router.post('/login', AuthController.login);
+// Public: Login endpoint protected by strict brute-force rate limiter
+router.post('/login', authLimiter, AuthController.login);
 router.post('/logout', AuthController.logout);
 
 // Protected: Current user profile

@@ -49,4 +49,12 @@ export class ApiError extends Error {
   static internal(message: string = 'Internal server error'): ApiError {
     return new ApiError(500, message);
   }
+
+  static tooManyRequests(message: string = 'Too many requests'): ApiError {
+    return new ApiError(429, message);
+  }
+
+  static gatewayTimeout(message: string = 'Gateway timeout: Request took too long to complete'): ApiError {
+    return new ApiError(504, message);
+  }
 }

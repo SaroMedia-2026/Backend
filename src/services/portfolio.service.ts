@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../config/supabase.js';
+import { supabaseAdmin, withClockSkewRetry } from '../config/supabase.js';
 import { PortfolioItem, PortfolioMedia } from '../types/index.js';
 import { ApiError } from '../utils/apiError.js';
 import { CloudinaryService } from './cloudinary.service.js';
@@ -53,7 +53,7 @@ export class PortfolioService {
     const to = from + limit - 1;
     query = query.range(from, to);
 
-    const { data, count, error } = await query;
+    const { data, count, error } = await withClockSkewRetry(async () => query);
     if (error) throw ApiError.internal(`Failed to fetch portfolio items: ${error.message}`);
 
     // Sort nested media by display_order

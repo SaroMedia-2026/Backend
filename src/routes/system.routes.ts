@@ -2,7 +2,7 @@ import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { supabaseAnon } from '../config/supabase.js';
-import { env } from '../config/env.js';
+import { authenticate, requireAdmin } from '../middleware/auth.middleware.js';
 import { runDatabaseSeed } from '../services/seed.service.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 import { ApiError } from '../utils/apiError.js';
@@ -39,7 +39,6 @@ systemRoutes.get(
     }
 
     const isDatabaseReady = missingTables.length === 0;
-    const projectRef = env.SUPABASE_URL ? new URL(env.SUPABASE_URL).hostname.split('.')[0] : '';
 
     res.json(
       ApiResponse.success('System status retrieved', {
@@ -48,15 +47,16 @@ systemRoutes.get(
         missingTables,
         requiredTablesCount: REQUIRED_TABLES.length,
         readyTablesCount: existingTables.length,
-        sqlEditorUrl: `https://supabase.com/dashboard/project/${projectRef}/sql/new`,
       })
     );
   })
 );
 
-// 2. Return Schema Migration SQL Script
+// 2. Return Schema Migration SQL Script (Protected)
 systemRoutes.get(
   '/schema-sql',
+  authenticate,
+  requireAdmin,
   asyncHandler(async (req, res) => {
     const possiblePaths = [
       path.resolve(process.cwd(), 'supabase/migrations/001_initial_schema.sql'),
@@ -86,9 +86,11 @@ systemRoutes.get(
   })
 );
 
-// 3. Trigger Database Seeding
+// 3. Trigger Database Seeding (Protected: Admin Only)
 systemRoutes.post(
   '/seed',
+  authenticate,
+  requireAdmin,
   asyncHandler(async (req, res) => {
     try {
       const result = await runDatabaseSeed();

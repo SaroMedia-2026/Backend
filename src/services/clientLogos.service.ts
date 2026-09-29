@@ -1,21 +1,23 @@
-import { supabaseAdmin } from '../config/supabase.js';
+import { supabaseAdmin, withClockSkewRetry } from '../config/supabase.js';
 import { ClientLogo } from '../types/index.js';
 import { ApiError } from '../utils/apiError.js';
 import { CloudinaryService } from './cloudinary.service.js';
 
 export class ClientLogosService {
   static async getAll(onlyActive: boolean = false): Promise<ClientLogo[]> {
-    let query = supabaseAdmin
-      .from('client_logos')
-      .select('*')
-      .order('display_order', { ascending: true })
-      .order('created_at', { ascending: false });
+    const { data, error } = await withClockSkewRetry(async () => {
+      let query = supabaseAdmin
+        .from('client_logos')
+        .select('*')
+        .order('display_order', { ascending: true })
+        .order('created_at', { ascending: false });
 
-    if (onlyActive) {
-      query = query.eq('is_active', true);
-    }
+      if (onlyActive) {
+        query = query.eq('is_active', true);
+      }
+      return query;
+    });
 
-    const { data, error } = await query;
     if (error) throw ApiError.internal(`Failed to fetch client logos: ${error.message}`);
     return data || [];
   }

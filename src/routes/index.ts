@@ -13,18 +13,39 @@ import { CareersController } from '../controllers/careers.controller.js';
 import { ContactsController } from '../controllers/contacts.controller.js';
 import { authenticate, requireStaff, requireAdmin } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
+import { submissionLimiter } from '../middleware/rateLimiter.middleware.js';
+import { preventDuplicateSubmission } from '../middleware/timeout.middleware.js';
 import { createContactSubmissionSchema, updateContactStatusSchema } from '../validators/contacts.validator.js';
 import { updateApplicationStatusSchema } from '../validators/careers.validator.js';
 
 const apiV1Router = Router();
 
-// Root health & meta
+// Root health, uptime, and system telemetry
 apiV1Router.get('/health', (req, res) => {
+  const uptimeSeconds = Math.floor(process.uptime());
+  const hours = Math.floor(uptimeSeconds / 3600);
+  const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+  const seconds = uptimeSeconds % 60;
+  const memory = process.memoryUsage();
+
   res.json({
-    status: 'online',
+    status: 'healthy',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
     service: 'Saro Agency Backend CMS API',
+    uptime: {
+      seconds: uptimeSeconds,
+      formatted: `${hours}h ${minutes}m ${seconds}s`,
+    },
+    system: {
+      nodeVersion: process.version,
+      platform: process.platform,
+      memoryMb: {
+        heapUsed: Math.round(memory.heapUsed / 1024 / 1024 * 100) / 100,
+        heapTotal: Math.round(memory.heapTotal / 1024 / 1024 * 100) / 100,
+        rss: Math.round(memory.rss / 1024 / 1024 * 100) / 100,
+      },
+    },
   });
 });
 
@@ -44,6 +65,8 @@ apiV1Router.use('/system', systemRoutes);
 // 1. POST /api/v1/contact (singular alias for contact form submission)
 apiV1Router.post(
   '/contact',
+  submissionLimiter,
+  preventDuplicateSubmission(15000),
   validate({ body: createContactSubmissionSchema }),
   ContactsController.submit
 );

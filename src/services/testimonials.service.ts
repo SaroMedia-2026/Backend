@@ -1,21 +1,23 @@
-import { supabaseAdmin } from '../config/supabase.js';
+import { supabaseAdmin, withClockSkewRetry } from '../config/supabase.js';
 import { Testimonial } from '../types/index.js';
 import { ApiError } from '../utils/apiError.js';
 import { CloudinaryService } from './cloudinary.service.js';
 
 export class TestimonialsService {
   static async getAll(onlyPublished: boolean = false): Promise<Testimonial[]> {
-    let query = supabaseAdmin
-      .from('testimonials')
-      .select('*')
-      .order('display_order', { ascending: true })
-      .order('created_at', { ascending: false });
+    const { data, error } = await withClockSkewRetry(async () => {
+      let query = supabaseAdmin
+        .from('testimonials')
+        .select('*')
+        .order('display_order', { ascending: true })
+        .order('created_at', { ascending: false });
 
-    if (onlyPublished) {
-      query = query.eq('published', true);
-    }
+      if (onlyPublished) {
+        query = query.eq('published', true);
+      }
+      return query;
+    });
 
-    const { data, error } = await query;
     if (error) throw ApiError.internal(`Failed to fetch testimonials: ${error.message}`);
     return data || [];
   }

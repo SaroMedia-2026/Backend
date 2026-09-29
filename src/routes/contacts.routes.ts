@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { ContactsController } from '../controllers/contacts.controller.js';
 import { authenticate, requireAdmin, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
+import { submissionLimiter } from '../middleware/rateLimiter.middleware.js';
+import { preventDuplicateSubmission } from '../middleware/timeout.middleware.js';
 import {
   createContactSubmissionSchema,
   updateContactStatusSchema,
@@ -9,9 +11,11 @@ import {
 
 const router = Router();
 
-// Public: Submit contact form
+// Public: Submit contact form (with rate limit and duplicate submission prevention)
 router.post(
   '/',
+  submissionLimiter,
+  preventDuplicateSubmission(15000),
   validate({ body: createContactSubmissionSchema }),
   ContactsController.submit
 );

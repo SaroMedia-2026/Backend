@@ -1,14 +1,16 @@
-import { supabaseAdmin } from '../config/supabase.js';
+import { supabaseAdmin, withClockSkewRetry } from '../config/supabase.js';
 import { SiteSettings } from '../types/index.js';
 import { ApiError } from '../utils/apiError.js';
 
 export class SiteSettingsService {
   static async getSettings(): Promise<SiteSettings> {
-    const { data, error } = await supabaseAdmin
-      .from('site_settings')
-      .select('*')
-      .limit(1)
-      .single();
+    const { data, error } = await withClockSkewRetry(async () =>
+      supabaseAdmin
+        .from('site_settings')
+        .select('*')
+        .limit(1)
+        .single()
+    );
 
     if (error) {
       // If table is empty, return default placeholder

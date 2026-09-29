@@ -6,8 +6,13 @@ import { env } from './config/env.js';
 import apiV1Router from './routes/index.js';
 import { errorHandler } from './middleware/error.middleware.js';
 import { ApiError } from './utils/apiError.js';
+import { globalLimiter } from './middleware/rateLimiter.middleware.js';
+import { requestTimeout } from './middleware/timeout.middleware.js';
 
 const app: Application = express();
+
+// Global request timeout (30 seconds)
+app.use(requestTimeout(30000));
 
 // 1. Security Headers
 app.use(helmet({
@@ -91,8 +96,8 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
-// 6. Mount API v1 Routes
-app.use('/api/v1', apiV1Router);
+// 6. Mount API v1 Routes with global rate limiter
+app.use('/api/v1', globalLimiter, apiV1Router);
 
 // 7. Handle Unmatched 404 Routes
 app.use((req: Request, res: Response, next: NextFunction) => {

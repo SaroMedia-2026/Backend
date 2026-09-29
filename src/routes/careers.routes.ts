@@ -2,6 +2,9 @@ import { Router } from 'express';
 import { CareersController } from '../controllers/careers.controller.js';
 import { authenticate, optionalAuth, requireAdmin, requireStaff } from '../middleware/auth.middleware.js';
 import { resumeUpload } from '../middleware/upload.middleware.js';
+import { submissionLimiter } from '../middleware/rateLimiter.middleware.js';
+import { preventDuplicateSubmission } from '../middleware/timeout.middleware.js';
+import { cacheResponse, invalidateCache } from '../middleware/cache.middleware.js';
 import { validate } from '../middleware/validate.middleware.js';
 import {
   createCareerSchema,
@@ -29,15 +32,17 @@ router.delete('/applications/:id', authenticate, requireAdmin, CareersController
 // 2. Career Listings Routes
 // ==============================================================================
 
-// Public: GET /api/v1/careers (open only) or Admin with ?all=true
-router.get('/', optionalAuth, CareersController.getCareers);
+// Public: GET /api/v1/careers (open only, cached 60s) or Admin with ?all=true
+router.get('/', optionalAuth, cacheResponse(60), CareersController.getCareers);
 
-// Public: GET /api/v1/careers/:id
-router.get('/:id', CareersController.getCareerById);
+// Public: GET /api/v1/careers/:id (cached 60s)
+router.get('/:id', cacheResponse(60), CareersController.getCareerById);
 
 // Public: POST /api/v1/careers/:id/apply (multipart form with 'resume' file or JSON)
 router.post(
   '/:id/apply',
+  submissionLimiter,
+  preventDuplicateSubmission(15000),
   resumeUpload.single('resume'),
   CareersController.apply
 );
@@ -47,6 +52,7 @@ router.post(
   '/',
   authenticate,
   requireAdmin,
+  invalidateCache('careers'),
   validate({ body: createCareerSchema }),
   CareersController.createCareer
 );
@@ -55,10 +61,11 @@ router.put(
   '/:id',
   authenticate,
   requireAdmin,
+  invalidateCache('careers'),
   validate({ body: updateCareerSchema }),
   CareersController.updateCareer
 );
 
-router.delete('/:id', authenticate, requireAdmin, CareersController.deleteCareer);
+router.delete('/:id', authenticate, requireAdmin, invalidateCache('careers'), CareersController.deleteCareer);
 
 export default router;

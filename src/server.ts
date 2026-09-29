@@ -7,14 +7,7 @@ validateEnv();
 
 
 const server = app.listen(env.PORT, () => {
-  logger.info(`====================================================`);
-  logger.info(`🚀 Saro Agency CMS Backend Server is running!`);
-  logger.info(`📡 Port:        http://localhost:${env.PORT}`);
-  logger.info(`🌍 Environment: ${env.NODE_ENV}`);
-  logger.info(`🔗 API Base:    http://localhost:${env.PORT}/api/v1`);
-  logger.info(`🛡️ Supabase:    ${env.SUPABASE_URL ? 'Connected' : 'Missing URL'}`);
-  logger.info(`🖼️ Cloudinary:  ${env.CLOUDINARY_CLOUD_NAME ? env.CLOUDINARY_CLOUD_NAME : 'Missing cloud_name'}`);
-  logger.info(`====================================================`);
+  logger.info(`Server started on port ${env.PORT}`);
 });
 
 // Graceful shutdown handling

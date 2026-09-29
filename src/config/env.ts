@@ -19,11 +19,6 @@ export const env = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || '',
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || '',
 
-  // Seed settings
-  SEED_ADMIN_EMAIL: process.env.SEED_ADMIN_EMAIL || 'admin@saroagency.com',
-  SEED_ADMIN_PASSWORD: process.env.SEED_ADMIN_PASSWORD || 'AdminSecurePassword123!',
-  SEED_ADMIN_NAME: process.env.SEED_ADMIN_NAME || 'Agency Admin',
-
   isProduction: process.env.NODE_ENV === 'production',
   isDevelopment: process.env.NODE_ENV === 'development',
 };
