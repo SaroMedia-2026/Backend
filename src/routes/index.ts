@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import authRoutes from './auth.routes.js';
 import clientLogosRoutes from './clientLogos.routes.js';
 import testimonialsRoutes from './testimonials.routes.js';
@@ -21,7 +21,7 @@ import { updateApplicationStatusSchema } from '../validators/careers.validator.j
 const apiV1Router = Router();
 
 // Root health, uptime, and system telemetry
-apiV1Router.get('/health', (req, res) => {
+apiV1Router.get('/health', (req: Request, res: Response) => {
   const uptimeSeconds = Math.floor(process.uptime());
   const hours = Math.floor(uptimeSeconds / 3600);
   const minutes = Math.floor((uptimeSeconds % 3600) / 60);
