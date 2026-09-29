@@ -14,6 +14,14 @@ const app: Application = express();
 // Global request timeout (30 seconds)
 app.use(requestTimeout(30000));
 
+// Normalize multiple slashes in request URLs (e.g. //auth/login -> /auth/login)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.url && req.url.includes('//')) {
+    req.url = req.url.replace(/\/+/g, '/');
+  }
+  next();
+});
+
 // 1. Security Headers
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
@@ -103,6 +111,9 @@ app.get('/', (req: Request, res: Response) => {
 
 // 6. Mount API v1 Routes with global rate limiter
 app.use('/api/v1', globalLimiter, apiV1Router);
+
+// 7. Route Alias Fallback: seamlessly handle requests missing /api/v1 prefix
+app.use('/', globalLimiter, apiV1Router);
 
 // 7. Handle Unmatched 404 Routes
 app.use((req: Request, res: Response, next: NextFunction) => {
